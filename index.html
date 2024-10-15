@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Surprise!</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        .sky {
+            background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
+            height: 100vh;
+            position: relative;
+        }
+        .airplane {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            transition: transform 0.5s ease;
+        }
+        .message-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .message-box h2 {
+            color: #FF69B4;
+            margin-bottom: 10px;
+        }
+        .message-box p {
+            color: #333;
+            font-size: 18px;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            opacity: 0;
+        }
+        .start-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #FF69B4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .start-button:hover {
+            background-color: #FF1493;
+        }
+    </style>
+</head>
+<body>
+    <div class="sky">
+        <div class="airplane"></div>
+        <div class="message-box">
+            <h2></h2>
+            <p></p>
+        </div>
+        <button class="start-button">Start Birthday Surprise!</button>
+    </div>
+
+    <script>
+        const airplane = document.querySelector('.airplane');
+        const messageBox = document.querySelector('.message-box');
+        const startButton = document.querySelector('.start-button');
+        const sky = document.querySelector('.sky');
+
+        const messages = [
+            { title: "Happy Birthday!", message: "Wishing you a day filled with joy and laughter!" },
+            { title: "Make a Wish!", message: "May all your dreams and wishes come true!" },
+            { title: "Celebrate You!", message: "Today is your day to shine and be celebrated!" },
+            { title: "Lots of Love!", message: "Sending you birthday love and warm wishes!" },
+            { title: "Surprise!", message: "Hope your day is full of wonderful surprises!" }
+        ];
+
+        let currentMessage = 0;
+
+        function flyAirplane() {
+            const maxX = window.innerWidth - 100;
+            const maxY = window.innerHeight - 100;
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+            const rotation = Math.atan2(y - airplane.offsetTop, x - airplane.offsetLeft) * 180 / Math.PI;
+
+            airplane.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
+
+            setTimeout(() => {
+                showMessage();
+                flyAirplane();
+            }, 3000);
+        }
+
+        function showMessage() {
+            messageBox.style.opacity = '0';
+            setTimeout(() => {
+                messageBox.querySelector('h2').textContent = messages[currentMessage].title;
+                messageBox.querySelector('p').textContent = messages[currentMessage].message;
+                messageBox.style.opacity = '1';
+                currentMessage = (currentMessage + 1) % messages.length;
+                createConfetti();
+            }, 500);
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.top = -10 + 'px';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                sky.appendChild(confetti);
+
+                anime({
+                    targets: confetti,
+                    top: window.innerHeight + 10 + 'px',
+                    left: '+=' + anime.random(-100, 100) + 'px',
+                    opacity: [1, 0],
+                    duration: anime.random(1000, 3000),
+                    easing: 'easeOutCubic',
+                    complete: function(anim) {
+                        sky.removeChild(confetti);
+                    }
+                });
+            }
+        }
+
+        startButton.addEventListener('click', () => {
+            startButton.style.display = 'none';
+            flyAirplane();
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+</body>
+</html>
